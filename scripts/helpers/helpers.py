@@ -30,9 +30,9 @@ PROCESS_PATH = "original_data/emojis-parsed.csv"  # temporary file
 # Name of columns in CSV
 CSV_COLUMNS = [
     "Group",
-    "Subgroup",
-    "CodePoint",
-    "Status",
+    #"Subgroup",
+    #"CodePoint",
+    #"Status",
     "Representation",
     "Name",
     "Section",
@@ -56,9 +56,9 @@ def write_row(group: dict, writer) -> None:
             for emoji in emojis:
                 emoji_dict = {
                     "Group": group_name,
-                    "Subgroup": subgroup_name,
-                    "CodePoint": emoji["code_point"],
-                    "Status": emoji["status"],
+                    #"Subgroup": subgroup_name,
+                    #"CodePoint": emoji["code_point"],
+                    #"Status": emoji["status"],
                     "Representation": emoji["representation"],
                     "Name": emoji["name"],
                     "Section": emoji["section"],
@@ -96,7 +96,7 @@ def dict_to_csv(
         print("I/O error. Aborting script.")
         sys.exit(0)
 
-    sort_data(process_path, csv_columns)
+    #sort_data(process_path, csv_columns)
     os.replace(process_path, out_path)
 
 
@@ -166,7 +166,10 @@ def add_emoji(match, group: str, group_dict: dict, subgroup: str) -> None:
         "section": match.group("section"),
         "name": clean_data(match.group("name"), field_type="name"),
     }
-    group_dict[group][subgroup].append(emoji)
+    if "fully-qualified" in emoji["status"]:
+        group_dict[group][subgroup].append(emoji)
+    else:
+        print("Skip emoji with no fully-qualified status")
 
 
 def parse_file(in_path: str, regex_dict: dict) -> list:
@@ -303,4 +306,4 @@ def run() -> None:
     regex_dict = get_regex_dict()
     data = parse_file(IN_PATH, regex_dict)
     dict_to_csv(data, CSV_COLUMNS, PROCESS_PATH, OUT_PATH)
-    generate_package()
+    #generate_package()
